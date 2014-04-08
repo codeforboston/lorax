@@ -6,16 +6,24 @@
 var fs = require('fs')
 
 var data = JSON.parse(fs.readFileSync('StreetTrees.geojson'));
-var trees = [];
-
-for(var feature in data.features) {
-	var out = {};
-	
-	out.id = trees.length;
-	out.species = data.features[feature].properties.species;
-	out.geometry = data.features[feature].geometry;
-	
-	trees.push(out);
+var trees = {
+	"type": "FeatureCollection",
+	"features": []
 };
 
-fs.writeFileSync('trees-reduced.json', JSON.stringify({ "trees": trees }));
+for(var feature in data.features) {
+	var out = {
+		"type": "Feature",
+		"id": 0,
+		"properties": {}
+	};
+	
+	out.id = trees.features.length;
+	out.properties.species = data.features[feature].properties.species;
+	out.geometry = data.features[feature].geometry;
+	
+	trees.features.push(out);
+};
+
+fs.writeFileSync('trees-reduced.geojson', JSON.stringify(trees, null, 2));
+fs.writeFileSync('trees-reduced.min.geojson', JSON.stringify(trees));
